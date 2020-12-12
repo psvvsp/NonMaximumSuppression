@@ -236,7 +236,6 @@ bool NMS_gpu::doIt(
         m_resultCPU, m_resultGPU,
         size * sizeof(char), cudaMemcpyDeviceToHost);
     if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaMemcpy failed!");
         return false;
     }
 
