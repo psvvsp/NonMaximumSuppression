@@ -4,7 +4,7 @@
 
 #include <vector>
 
-void nms_stl(
+void nms_multiple_threads(
     const std::vector<Box>& boxesIn,
     const std::vector<real>& scoresIn,
     real threshold,

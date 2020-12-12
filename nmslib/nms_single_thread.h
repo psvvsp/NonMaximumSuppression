@@ -4,7 +4,7 @@
 
 #include <vector>
 
-void nms_omp(
+void nms_single_thread(
     const std::vector<Box>& boxesIn,
     const std::vector<real>& scoresIn,
     real threshold,

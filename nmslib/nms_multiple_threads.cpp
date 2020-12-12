@@ -54,7 +54,7 @@ void threadFunction(
     }
 }
 
-void nms_stl(
+void nms_multiple_threads(
     const std::vector<Box>& boxesIn,
     const std::vector<real>& scoresIn,
     real threshold,
@@ -68,22 +68,20 @@ void nms_stl(
     for (size_t i = 0; i < size; i++)
         records[i].reset(new Record(boxesIn[i], scoresIn[i], false));
 
-    using namespace std::chrono;
+    //using namespace std::chrono;
 
-    // cpu
-    steady_clock::time_point t1 = steady_clock::now();
+    //steady_clock::time_point t1 = steady_clock::now();
 
     std::sort(records.begin(), records.end(),
         [](const std::unique_ptr<Record>& l, const std::unique_ptr<Record>& r) { return l->score > r->score; });
 
-    steady_clock::time_point t2 = steady_clock::now();
+    //steady_clock::time_point t2 = steady_clock::now();
 
-    duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+    //duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 
-    std::cout << "Sorting took " << time_span.count() << " seconds" << std::endl;
+    //std::cout << "Sorting took " << time_span.count() << " seconds" << std::endl;
 
     size_t threadsNum = std::thread::hardware_concurrency();
-    //size_t threadsNum = 2;
     std::vector<std::unique_ptr<std::thread>> threads(threadsNum);
     
     std::vector<std::atomic<size_t>> positions(threadsNum);

@@ -17,7 +17,7 @@ namespace {
 
 }
 
-void nms_omp(
+void nms_single_thread(
     const std::vector<Box>& boxesIn,
     const std::vector<real>& scoresIn,
     real threshold,
@@ -32,19 +32,18 @@ void nms_omp(
     for (size_t i = 0; i < size; i++)
         records.push_back({ boxesIn[i], scoresIn[i], false });
 
-    using namespace std::chrono;
+    //using namespace std::chrono;
 
-    // cpu
-    steady_clock::time_point t1 = steady_clock::now();
+    //steady_clock::time_point t1 = steady_clock::now();
 
     std::sort(records.begin(), records.end(),
         [](const Record& l, const Record& r) { return l.score > r.score; });
 
-    steady_clock::time_point t2 = steady_clock::now();
+    //steady_clock::time_point t2 = steady_clock::now();
 
-    duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+    //duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 
-    std::cout << "Sorting took " << time_span.count() << " seconds" << std::endl;
+    //std::cout << "Sorting took " << time_span.count() << " seconds" << std::endl;
 
     boxesOut.clear();
     scoresOut.clear();

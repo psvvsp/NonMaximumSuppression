@@ -7,4 +7,4 @@ project ("NonMaximumSuppression")
 
 # Включите подпроекты.
 add_subdirectory ("nmslib")
-add_subdirectory ("nmstest")
+#add_subdirectory ("nmstest")

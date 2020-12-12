@@ -53,7 +53,7 @@ static bool compareResults(
 
 int main(int argc, char* argv[])
 {
-    int boxCount = 300;
+    int boxCount = 3000;
     if (argc > 1) {
         boxCount = std::stoi(argv[1]);
     }
@@ -69,16 +69,16 @@ int main(int argc, char* argv[])
 
     using namespace std::chrono;
 
-    // cpu
+    // single thread
     steady_clock::time_point t1 = steady_clock::now();
 
-    //nms_cpu(boxes, scores, threshold, boxesOut, scoresOut);
+    nms_single_thread(boxes, scores, threshold, boxesOut, scoresOut);
 
     steady_clock::time_point t2 = steady_clock::now();
 
     duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
 
-    std::cout << "Output boxes count (cpu): " << boxesOut.size() << std::endl;
+    std::cout << "Output boxes count (single thread): " << boxesOut.size() << std::endl;
     std::cout << "It took me " << time_span.count() << " seconds.";
     std::cout << std::endl << std::endl;
 
@@ -103,38 +103,19 @@ int main(int argc, char* argv[])
     if (!compareResults(boxesOut, scoresOut, boxesOutGPU, scoresOutGPU))
         std::cout << "Results are different!" << std::endl << std::endl;
 
-    // omp
-    std::vector<Box> boxesOutOmp;
-    std::vector<real> scoresOutOmp;
-
-    t1 = steady_clock::now();
-
-    nms_omp(boxes, scores, threshold, boxesOutOmp, scoresOutOmp);
-
-    t2 = steady_clock::now();
-
-    time_span = duration_cast<duration<double>>(t2 - t1);
-
-    std::cout << "Output boxes count (omp): " << boxesOutOmp.size() << std::endl;
-    std::cout << "It took me " << time_span.count() << " seconds.";
-    std::cout << std::endl << std::endl;
-
-    if (!compareResults(boxesOut, scoresOut, boxesOutOmp, scoresOutOmp))
-        std::cout << "Results are different!" << std::endl;
-
-    // stl threads
+    // multiple threads
     std::vector<Box> boxesOutStl;
     std::vector<real> scoresOutStl;
 
     t1 = steady_clock::now();
 
-    nms_stl(boxes, scores, threshold, boxesOutStl, scoresOutStl);
+    nms_multiple_threads(boxes, scores, threshold, boxesOutStl, scoresOutStl);
 
     t2 = steady_clock::now();
 
     time_span = duration_cast<duration<double>>(t2 - t1);
 
-    std::cout << "Output boxes count (stl): " << boxesOutStl.size() << std::endl;
+    std::cout << "Output boxes count (multiple threads): " << boxesOutStl.size() << std::endl;
     std::cout << "It took me " << time_span.count() << " seconds.";
     std::cout << std::endl << std::endl;
 
