@@ -83,25 +83,30 @@ int main(int argc, char* argv[])
     std::cout << std::endl << std::endl;
 
     // gpu
-    NMS_gpu nms_gpu(boxes.size());
+    NMS_gpu nms_gpu;
+    if (nms_gpu.init(boxCount)) {
 
-    std::vector<Box> boxesOutGPU;
-    std::vector<real> scoresOutGPU;
+        std::vector<Box> boxesOutGPU;
+        std::vector<real> scoresOutGPU;
 
-    t1 = steady_clock::now();
+        t1 = steady_clock::now();
 
-    nms_gpu.doIt(boxes, scores, threshold, boxesOutGPU, scoresOutGPU);
+        nms_gpu.doIt(boxes, scores, threshold, boxesOutGPU, scoresOutGPU);
 
-    t2 = steady_clock::now();
+        t2 = steady_clock::now();
 
-    time_span = duration_cast<duration<double>>(t2 - t1);
+        time_span = duration_cast<duration<double>>(t2 - t1);
 
-    std::cout << "Output boxes count (gpu): " << boxesOutGPU.size() << std::endl;
-    std::cout << "It took me " << time_span.count() << " seconds.";
-    std::cout << std::endl << std::endl;
+        std::cout << "Output boxes count (gpu): " << boxesOutGPU.size() << std::endl;
+        std::cout << "It took me " << time_span.count() << " seconds.";
+        std::cout << std::endl << std::endl;
 
-    if (!compareResults(boxesOut, scoresOut, boxesOutGPU, scoresOutGPU))
-        std::cout << "Results are different!" << std::endl << std::endl;
+        if (!compareResults(boxesOut, scoresOut, boxesOutGPU, scoresOutGPU))
+            std::cout << "Results are different!" << std::endl << std::endl;
+    }
+    else {
+        std::cout << "Failed to initialize nms_gpu!" << std::endl << std::endl;
+    }
 
     // multiple threads
     std::vector<Box> boxesOutStl;

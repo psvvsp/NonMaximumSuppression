@@ -20,7 +20,7 @@ namespace {
     };
 }
 
-void threadFunction(
+static void threadFunction(
     std::vector<std::unique_ptr<Record>>& records,
     std::vector<std::atomic<size_t>> &positions,
     size_t threadIndex, real threshold)

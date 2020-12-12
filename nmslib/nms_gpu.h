@@ -7,7 +7,7 @@
 class NMS_gpu
 {
 public:
-    NMS_gpu(size_t boxesCountMax);
+    NMS_gpu();
     ~NMS_gpu();
 
     NMS_gpu(const NMS_gpu& other) = delete;
@@ -21,11 +21,13 @@ public:
         std::vector<real>& scoresOut
     );
 
+    bool init(size_t boxesCountMax);
+
 private:
+    size_t m_boxesCountMax;
+    int m_maxBlockSize;
     Box* m_boxesInCPU;
     Box* m_boxesInGPU;
-    real* m_scoresInGPU;
     char* m_resultGPU;
     char* m_resultCPU;
-    size_t m_boxesCountMax;
 };
