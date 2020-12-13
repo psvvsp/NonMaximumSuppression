@@ -38,3 +38,5 @@ private:
     std::uniform_int_distribution<integer> m_distrHeight;
 };
 
+void generateBoxes(size_t count,
+    std::vector<Box>& boxes, std::vector<real>& scores);

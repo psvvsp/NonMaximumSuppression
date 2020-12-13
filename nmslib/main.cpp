@@ -2,34 +2,13 @@
 #include "nms_single_thread.h"
 #include "nms_multiple_threads.h"
 #include "nms_gpu.h"
+#include "nms_impl.h"
 
 #include <cassert>
 #include <chrono>
 #include <iostream>
 #include <string>
 #include <vector>
-
-static void generateBoxes(int count,
-    std::vector<Box>& boxes, std::vector<real>& scores)
-{
-    boxes.clear();
-    scores.clear();
-
-    boxes.reserve(count);
-    scores.reserve(count);
-
-    unsigned seed = static_cast<unsigned>(
-        std::chrono::system_clock::now().time_since_epoch().count());
-    std::default_random_engine generator(seed);
-
-    BoxGenerator boxGenerator(4096, 2160);
-    std::uniform_real_distribution<real> distr;
-
-    for (int i = 0; i < count; i++) {
-        boxes.push_back(boxGenerator.generate(generator));
-        scores.push_back(distr(generator));
-    }
-}
 
 static bool compareResults(
     std::vector<Box>& boxes1, std::vector<real>& scores1,
@@ -84,7 +63,7 @@ static void runNMS(
 
 int main(int argc, char* argv[])
 {
-    int boxCount = 3000;
+    int boxCount = 300;
     if (argc > 1) {
         boxCount = std::stoi(argv[1]);
     }
@@ -93,7 +72,7 @@ int main(int argc, char* argv[])
     std::vector<real> scores;
     real threshold = real(0.7);
 
-    generateBoxes(boxCount, boxes, scores);
+    generateBoxes(size_t(boxCount), boxes, scores);
 
     std::vector<Box> boxesOut;
     std::vector<real> scoresOut;
@@ -125,6 +104,18 @@ int main(int argc, char* argv[])
         scoresOutGPU, nms_gpu, "multiple threads");
 
     if (!compareResults(boxesOut, scoresOut, boxesOutThreads, scoresOutThreads))
+        std::cout << "Results are different!" << std::endl;
+
+    // optimal implementation
+    NMS_impl nms_impl;
+
+    std::vector<Box> boxesOutImpl;
+    std::vector<real> scoresOutImpl;
+
+    runNMS(boxes, scores, threshold, boxesOutImpl,
+        scoresOutImpl, nms_gpu, "optimal implementation");
+
+    if (!compareResults(boxesOut, scoresOut, boxesOutImpl, scoresOutImpl))
         std::cout << "Results are different!" << std::endl;
 
     return 0;

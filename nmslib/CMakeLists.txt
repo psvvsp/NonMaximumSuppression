@@ -19,12 +19,12 @@ set(HEADER_FILES
     "nms_single_thread.h"
     "nms_multiple_threads.h")
  
-add_library(nmslib STATIC ${HEADER_FILES} ${SOURCE_FILES})
+add_library(nmslib STATIC ${HEADER_FILES} ${SOURCE_FILES} "nms_impl.cpp" "box_generator.cpp")
 
 set_target_properties( nmslib
                        PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
-add_executable(nmstest "main.cpp")
+add_executable(nmstest "main.cpp" "nms_impl.cpp" "box_generator.cpp")
  
 set_target_properties(nmstest 
              PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
