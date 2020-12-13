@@ -51,6 +51,37 @@ static bool compareResults(
     return true;
 }
 
+static void runNMS(
+    const std::vector<Box>& boxesIn,
+    const std::vector<real>& scoresIn,
+    real threshold,
+    std::vector<Box>& boxesOut,
+    std::vector<real>& scoresOut,
+    NMS_interface& nms_interface,
+    const std::string name
+)
+{
+    using namespace std::chrono;
+
+    if (nms_interface.init(boxesIn.size())) {
+
+        steady_clock::time_point t1 = steady_clock::now();
+
+        nms_interface.doIt(boxesIn, scoresIn, threshold, boxesOut, scoresOut);
+
+        steady_clock::time_point t2 = steady_clock::now();
+
+        duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+
+        std::cout << "Output boxes count (" << name << "): " << boxesOut.size() << std::endl;
+        std::cout << "It took me " << time_span.count() << " seconds.";
+        std::cout << std::endl << std::endl;
+    }
+    else {
+        std::cout << "Failed to initialize " << name << "!" << std::endl << std::endl;
+    }
+}
+
 int main(int argc, char* argv[])
 {
     int boxCount = 3000;
@@ -67,64 +98,33 @@ int main(int argc, char* argv[])
     std::vector<Box> boxesOut;
     std::vector<real> scoresOut;
 
-    using namespace std::chrono;
-
     // single thread
-    steady_clock::time_point t1 = steady_clock::now();
-
-    nms_single_thread(boxes, scores, threshold, boxesOut, scoresOut);
-
-    steady_clock::time_point t2 = steady_clock::now();
-
-    duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-
-    std::cout << "Output boxes count (single thread): " << boxesOut.size() << std::endl;
-    std::cout << "It took me " << time_span.count() << " seconds.";
-    std::cout << std::endl << std::endl;
+    NMS_single_thread nms_single_thread;
+    runNMS(boxes, scores, threshold, boxesOut,
+        scoresOut, nms_single_thread, "single thread");
 
     // gpu
     NMS_gpu nms_gpu;
-    if (nms_gpu.init(boxCount)) {
 
-        std::vector<Box> boxesOutGPU;
-        std::vector<real> scoresOutGPU;
+    std::vector<Box> boxesOutGPU;
+    std::vector<real> scoresOutGPU;
 
-        t1 = steady_clock::now();
+    runNMS(boxes, scores, threshold, boxesOutGPU,
+        scoresOutGPU, nms_gpu, "gpu");
 
-        nms_gpu.doIt(boxes, scores, threshold, boxesOutGPU, scoresOutGPU);
-
-        t2 = steady_clock::now();
-
-        time_span = duration_cast<duration<double>>(t2 - t1);
-
-        std::cout << "Output boxes count (gpu): " << boxesOutGPU.size() << std::endl;
-        std::cout << "It took me " << time_span.count() << " seconds.";
-        std::cout << std::endl << std::endl;
-
-        if (!compareResults(boxesOut, scoresOut, boxesOutGPU, scoresOutGPU))
-            std::cout << "Results are different!" << std::endl << std::endl;
-    }
-    else {
-        std::cout << "Failed to initialize nms_gpu!" << std::endl << std::endl;
-    }
+    if (!compareResults(boxesOut, scoresOut, boxesOutGPU, scoresOutGPU))
+        std::cout << "Results are different!" << std::endl << std::endl;
 
     // multiple threads
-    std::vector<Box> boxesOutStl;
-    std::vector<real> scoresOutStl;
+    NMS_multiple_threads nms_multiple_threads;
+    
+    std::vector<Box> boxesOutThreads;
+    std::vector<real> scoresOutThreads;
 
-    t1 = steady_clock::now();
+    runNMS(boxes, scores, threshold, boxesOutGPU,
+        scoresOutGPU, nms_gpu, "multiple threads");
 
-    nms_multiple_threads(boxes, scores, threshold, boxesOutStl, scoresOutStl);
-
-    t2 = steady_clock::now();
-
-    time_span = duration_cast<duration<double>>(t2 - t1);
-
-    std::cout << "Output boxes count (multiple threads): " << boxesOutStl.size() << std::endl;
-    std::cout << "It took me " << time_span.count() << " seconds.";
-    std::cout << std::endl << std::endl;
-
-    if (!compareResults(boxesOut, scoresOut, boxesOutStl, scoresOutStl))
+    if (!compareResults(boxesOut, scoresOut, boxesOutThreads, scoresOutThreads))
         std::cout << "Results are different!" << std::endl;
 
     return 0;

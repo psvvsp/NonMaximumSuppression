@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Box.h"
+#include "nms_interface.h"
 
 #include <vector>
 
-class NMS_gpu
+class NMS_gpu : public NMS_interface
 {
 public:
     NMS_gpu();
-    ~NMS_gpu();
+    virtual ~NMS_gpu();
 
     NMS_gpu(const NMS_gpu& other) = delete;
     NMS_gpu& operator =(const NMS_gpu& other) = delete;
@@ -19,9 +19,9 @@ public:
         real threshold,
         std::vector<Box>& boxesOut,
         std::vector<real>& scoresOut
-    );
+    ) override;
 
-    bool init(size_t boxesCountMax);
+    bool init(size_t boxesCountMax) override;
 
 private:
     size_t m_boxesCountMax;

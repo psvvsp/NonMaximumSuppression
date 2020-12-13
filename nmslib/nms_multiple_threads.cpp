@@ -54,7 +54,7 @@ static void threadFunction(
     }
 }
 
-void nms_multiple_threads(
+bool NMS_multiple_threads::doIt(
     const std::vector<Box>& boxesIn,
     const std::vector<real>& scoresIn,
     real threshold,
@@ -106,4 +106,6 @@ void nms_multiple_threads(
             scoresOut.push_back(record->score);
         }
     }
+
+    return true;
 }

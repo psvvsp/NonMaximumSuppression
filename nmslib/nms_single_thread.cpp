@@ -17,7 +17,7 @@ namespace {
 
 }
 
-void nms_single_thread(
+bool NMS_single_thread::doIt(
     const std::vector<Box>& boxesIn,
     const std::vector<real>& scoresIn,
     real threshold,
@@ -69,4 +69,6 @@ void nms_single_thread(
 
         while (i < size && records[i].removed) i++;
     }
+
+    return true;
 }
