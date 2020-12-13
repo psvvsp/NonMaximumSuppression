@@ -2,7 +2,7 @@
 #include "nms_single_thread.h"
 #include "nms_multiple_threads.h"
 #include "nms_gpu.h"
-#include "nms_impl.h"
+#include "nms.h"
 
 #include <cassert>
 #include <chrono>
@@ -107,13 +107,13 @@ int main(int argc, char* argv[])
         std::cout << "Results are different!" << std::endl;
 
     // optimal implementation
-    NMS_impl nms_impl;
+    NMS nms;
 
     std::vector<Box> boxesOutImpl;
     std::vector<real> scoresOutImpl;
 
     runNMS(boxes, scores, threshold, boxesOutImpl,
-        scoresOutImpl, nms_impl, "optimal implementation");
+        scoresOutImpl, nms, "optimal implementation");
 
     if (!compareResults(boxesOut, scoresOut, boxesOutImpl, scoresOutImpl))
         std::cout << "Results are different!" << std::endl;
