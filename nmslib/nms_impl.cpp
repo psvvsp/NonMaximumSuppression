@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <iostream>
 
 static double runSMP(
     const std::vector<Box>& boxesIn,
@@ -44,8 +45,11 @@ bool NMS_impl::init(size_t boxesCountMax)
     if (!m_nms_multiple_threads.init(boxesCountMax))
         return false;
 
+    const size_t increment = boxesCountMax / 10;
     for (size_t boxesCount = boxesCountMax / 10;
-        boxesCount < boxesCountMax; boxesCount++) {
+        boxesCount < boxesCountMax; boxesCount += increment) {
+
+        //std::cout << "BoxesCount = " << boxesCount << std::endl;
 
         std::vector<Box> boxesIn;
         std::vector<real> scoresIn;
@@ -85,7 +89,7 @@ bool NMS_impl::init(size_t boxesCountMax)
         m_implementations.push_back(pair);
     }
 
-    return false;
+    return true;
 }
 
 bool NMS_impl::doIt(

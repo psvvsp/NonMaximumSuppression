@@ -26,7 +26,7 @@ add_library(nmslib STATIC ${HEADER_FILES} ${SOURCE_FILES})
 set_target_properties( nmslib
                        PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
-add_executable(nmstest "main.cpp")
+add_executable(nmstest "test.cpp")
  
 set_target_properties(nmstest 
              PROPERTIES CUDA_SEPARABLE_COMPILATION ON)

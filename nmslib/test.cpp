@@ -63,7 +63,7 @@ static void runNMS(
 
 int main(int argc, char* argv[])
 {
-    int boxCount = 300;
+    int boxCount = 3000;
     if (argc > 1) {
         boxCount = std::stoi(argv[1]);
     }
@@ -100,8 +100,8 @@ int main(int argc, char* argv[])
     std::vector<Box> boxesOutThreads;
     std::vector<real> scoresOutThreads;
 
-    runNMS(boxes, scores, threshold, boxesOutGPU,
-        scoresOutGPU, nms_gpu, "multiple threads");
+    runNMS(boxes, scores, threshold, boxesOutThreads,
+        scoresOutThreads, nms_multiple_threads, "multiple threads");
 
     if (!compareResults(boxesOut, scoresOut, boxesOutThreads, scoresOutThreads))
         std::cout << "Results are different!" << std::endl;
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
     std::vector<real> scoresOutImpl;
 
     runNMS(boxes, scores, threshold, boxesOutImpl,
-        scoresOutImpl, nms_gpu, "optimal implementation");
+        scoresOutImpl, nms_impl, "optimal implementation");
 
     if (!compareResults(boxesOut, scoresOut, boxesOutImpl, scoresOutImpl))
         std::cout << "Results are different!" << std::endl;
